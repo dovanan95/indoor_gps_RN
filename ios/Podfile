@@ -18,4 +18,6 @@ target 'positioningtech' do
   #     flipper_post_install(installer)
   #   end
   # end
+  pod 'RNWifi', :path => '../node_modules/react-native-wifi-reborn'
+
 end
