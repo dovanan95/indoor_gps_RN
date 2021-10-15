@@ -3,6 +3,7 @@ import WifiManager from "react-native-wifi-reborn";
 import wifi from 'react-native-android-wifi';
 import React from 'react';
 import { PermissionsAndroid,Platform, Image, LogBox } from 'react-native';
+//import firebase from 'react-native-firebase';
 
 const getPermission =async()=>{
     if(Platform.OS=='android')
@@ -91,6 +92,7 @@ const getwifiData =async()=>{
         console.log(data.wifi_data[key]['BSSID']);
     }
   }
+
   
 export default(
     {

@@ -106,8 +106,17 @@ export default function App() {
           let wifilist = await WifiManager.loadWifiList();
           
           console.log(IP, current_ssid, current_RSSI);
-          console.log(wifilist);
-
+          if(wifilist.length>0)
+          {
+            console.log(wifilist);
+            alert('RSSI: '+ wifilist[0].level);
+  
+          }
+          else if(wifilist.length==0)
+          {
+            alert('khong quet duoc');
+          }
+      
           wifi.getFrequency((frequency) => {
             console.log('frequency:'+ frequency);
           });
@@ -174,7 +183,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={{color:'blue'}}>이동통신연구실</Text>
+      <Text style={{color:'blue'}}>PHAN MEM DINH VI</Text>
       <TouchableOpacity onPress={()=>getwifiData()}>
         <Text>GET WIFI INFO</Text>
       </TouchableOpacity>
