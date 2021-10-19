@@ -87,7 +87,7 @@ export default function App() {
   const getwifiData =async()=>{
     try
     {
-      console.log(getImageSize());
+      //helper.test_firebase();
       let perm = await getPermission();
       if(perm=='OK')
       {

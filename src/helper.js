@@ -4,6 +4,7 @@ import wifi from 'react-native-android-wifi';
 import React from 'react';
 import { PermissionsAndroid,Platform, Image, LogBox } from 'react-native';
 //import firebase from 'react-native-firebase';
+import firebase from 'firebase/database'
 
 const getPermission =async()=>{
     if(Platform.OS=='android')
@@ -91,6 +92,11 @@ const getwifiData =async()=>{
     {
         console.log(data.wifi_data[key]['BSSID']);
     }
+  };
+
+  const test_firebase=()=>{
+    let db_test= firebase.getDatabase();
+    console.log(db_test);
   }
 
   
@@ -98,5 +104,5 @@ export default(
     {
         getwifiData, 
         getPermission,
-        weightedCentroid
+        weightedCentroid, test_firebase
     });
