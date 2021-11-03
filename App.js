@@ -87,7 +87,7 @@ export default function App() {
   const getwifiData =async()=>{
     try
     {
-      //helper.test_firebase();
+      helper.test_firebase();
       let perm = await getPermission();
       if(perm=='OK')
       {

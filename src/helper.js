@@ -3,8 +3,9 @@ import WifiManager from "react-native-wifi-reborn";
 import wifi from 'react-native-android-wifi';
 import React from 'react';
 import { PermissionsAndroid,Platform, Image, LogBox } from 'react-native';
-//import firebase from 'react-native-firebase';
-import firebase from 'firebase/database'
+import{getDatabase, ref, get, set, onValue} from 'firebase/database';
+import firebaseApp from './firebase_config';
+
 
 const getPermission =async()=>{
     if(Platform.OS=='android')
@@ -94,9 +95,20 @@ const getwifiData =async()=>{
     }
   };
 
-  const test_firebase=()=>{
-    let db_test= firebase.getDatabase();
-    console.log(db_test);
+  const test_firebase=async()=>{
+    try
+    {
+      const db = getDatabase(firebaseApp.app);
+      var data = ref(db, 'test/test1');
+      onValue(data, (snapshot)=>{
+        const dt = snapshot.val();
+        console.log(dt);
+      });
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
   }
 
   
