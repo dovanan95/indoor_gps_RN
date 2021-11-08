@@ -90,15 +90,16 @@ const getwifiData =async()=>{
   const getClosestAP = (listAP) =>{
     var rssi_collect = [];
     var bssid_closest = [];
+    var threshold_level = -46;
     for(var item in listAP)
     {
       rssi_collect.push(listAP[item]['level']);
     }
     for(var i in rssi_collect)
     {
-      if(Math.max(rssi_collect)==rssi_collect[i])
+      if(Math.max(rssi_collect)==rssi_collect[i] && rssi_collect[i]>threshold_level)
       {
-        bssid_closest.push(listAP[i]['BSSID']);
+        bssid_closest.push({'bssid': listAP[i]['BSSID'], 'rssi': rssi_collect[i]});
       }
     }
     return(bssid_closest);
@@ -127,14 +128,16 @@ const getwifiData =async()=>{
       console.log(error);
     }
   }
-  const writeAP_Location=async(bssid, x, y)=>{
+  const writeAP_Location=async(bssid, x, y, rssi)=>{
     try
     {
       const db = getDatabase(firebaseApp.app);
-      set(ref(db, 'AP_Location/'+bssid),
+      set(ref(db, 'AP_Location/'+Date.now()),
       {
+        'bssid': bssid,
         'x_coor': x,
-        'y_coor': y
+        'y_coor': y,
+        'rssi': rssi
       })
     }
     catch(error)

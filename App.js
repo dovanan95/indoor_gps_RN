@@ -87,7 +87,7 @@ export default function App() {
   const getwifiData =async()=>{
     try
     {
-      helper.test_firebase();
+      //helper.test_firebase();
       let perm = await getPermission();
       if(perm=='OK')
       {
@@ -110,8 +110,18 @@ export default function App() {
           {
             console.log(wifilist);
             var closetAP = helper.getClosestAP(wifilist);
-            helper.writeAP_Location(closetAP, x_coo, y_coo);
-            alert('AP gan nhat: '+ closetAP);
+            if(closetAP.length==1)
+            {
+              helper.writeAP_Location(closetAP[0]['bssid'], x_coo, y_coo, closetAP[0]['rssi']);
+            }
+            else if(closetAP.length>1)
+            {
+              for(var index in closetAP)
+              {
+                helper.writeAP_Location(closetAP[index]['bssid'], x_coo, y_coo, closetAP[index]['rssi']);
+              }
+            }
+            alert('AP gan nhat: '+ closetAP[0]['bssid']);
             console.log('RSSI: '+ wifilist[0].level);
   
           }
