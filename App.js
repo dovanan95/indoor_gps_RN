@@ -109,26 +109,16 @@ export default function App() {
           if(wifilist.length>0)
           {
             console.log(wifilist);
-            alert('RSSI: '+ wifilist[0].level);
+            var closetAP = helper.getClosestAP(wifilist);
+            helper.writeAP_Location(closetAP, x_coo, y_coo);
+            alert('AP gan nhat: '+ closetAP);
+            console.log('RSSI: '+ wifilist[0].level);
   
           }
           else if(wifilist.length==0)
           {
             alert('khong quet duoc');
           }
-      
-          wifi.getFrequency((frequency) => {
-            console.log('frequency:'+ frequency);
-          });
-
-          wifi.loadWifiList((wifiStringList) => {
-            var wifiArray = JSON.parse(wifiStringList);
-              console.log(wifiArray);
-            },
-            (error) => {
-              console.log(error);
-            }
-          );
         }
         
       }

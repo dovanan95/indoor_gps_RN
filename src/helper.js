@@ -87,6 +87,23 @@ const getwifiData =async()=>{
 
   };
 
+  const getClosestAP = (listAP) =>{
+    var rssi_collect = [];
+    var bssid_closest = [];
+    for(var item in listAP)
+    {
+      rssi_collect.push(listAP[item]['level']);
+    }
+    for(var i in rssi_collect)
+    {
+      if(Math.max(rssi_collect)==rssi_collect[i])
+      {
+        bssid_closest.push(listAP[i]['BSSID']);
+      }
+    }
+    return(bssid_closest);
+  }
+
   const weightedCentroid = () =>{
     var wifiList = [];
     for(let key in data.wifi_data)
@@ -110,11 +127,26 @@ const getwifiData =async()=>{
       console.log(error);
     }
   }
+  const writeAP_Location=async(bssid, x, y)=>{
+    try
+    {
+      const db = getDatabase(firebaseApp.app);
+      set(ref(db, 'AP_Location/'+bssid),
+      {
+        'x_coor': x,
+        'y_coor': y
+      })
+    }
+    catch(error)
+    {
+      alert(error);
+    }
+  }
 
   
 export default(
     {
-        getwifiData, 
-        getPermission,
+        getwifiData, writeAP_Location,
+        getPermission, getClosestAP,
         weightedCentroid, test_firebase
     });
