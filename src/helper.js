@@ -34,10 +34,10 @@ const getPermission =async()=>{
     }
   };
 
-const getwifiData =async()=>{
+const getwifiData =async(x_coo, y_coo)=>{
     try
     {
-      console.log(getImageSize());
+      //helper.test_firebase();
       let perm = await getPermission();
       if(perm=='OK')
       {
@@ -53,26 +53,34 @@ const getwifiData =async()=>{
           let IP = await WifiManager.getIP();
           let current_ssid = await WifiManager.getCurrentWifiSSID();
           let current_RSSI = await WifiManager.getCurrentSignalStrength();
-          var wifilist = await WifiManager.loadWifiList();
+          let wifilist = await WifiManager.loadWifiList();
           
           console.log(IP, current_ssid, current_RSSI);
-          console.log(wifilist);
-
-          wifi.getFrequency((frequency) => {
-            console.log('frequency:'+ frequency);
-          });
-
-          wifi.loadWifiList((wifiStringList) => {
-            var wifiArray = JSON.parse(wifiStringList);
-              console.log(wifiArray);
-            },
-            (error) => {
-              console.log(error);
+          if(wifilist.length>0)
+          {
+            console.log(wifilist);
+            var closetAP = getClosestAP(wifilist);
+            if(closetAP.length==1)
+            {
+              writeAP_Location(closetAP[0]['bssid'], x_coo, y_coo, closetAP[0]['rssi']);
             }
-          );
-        }
-        return(wifilist);
+            else if(closetAP.length>1)
+            {
+              for(var index in closetAP)
+              {
+                writeAP_Location(closetAP[index]['bssid'], x_coo, y_coo, closetAP[index]['rssi']);
+              }
+            }
+            alert('AP gan nhat: '+ closetAP[0]['bssid']);
+            console.log('RSSI: '+ wifilist[0].level);
 
+          }
+          else if(wifilist.length==0)
+          {
+            alert('khong quet duoc');
+          }
+        }
+        
       }
       else
       {
