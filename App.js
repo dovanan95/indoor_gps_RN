@@ -32,7 +32,7 @@ export default function App() {
   const imageURI ='./src/asset/map7th_floor.png';
   const imageImport = Image.resolveAssetSource(img).uri;
 
-  const Mode =[{'mode':'AP', 'value':'Scan AP Location'},{'mode':'RSSI', 'value':'Scan RSSI'}];
+  const Mode =[{'mode':'AP', 'value':'Scan AP Location'},{'mode':'RSSI', 'value':'Scan RSSI'},{'mode':'POS','value':'Positioning'}];
 
   const getImageSize = ()=>{
     let height_r, width_r;
@@ -131,7 +131,13 @@ export default function App() {
             }
             else if(mode=='RSSI')
             {
-              console.log('RSSI: '+ wifilist[0].level);
+              alert('RSSI: '+ wifilist[0].level);
+              helper.writeRSSI_data(wifilist,x_coo, y_coo);
+            }
+            else if(mode=='POS')
+            {
+              console.log('POS');
+              helper.weightedCentroid();
             }
           }
           else if(wifilist.length==0)

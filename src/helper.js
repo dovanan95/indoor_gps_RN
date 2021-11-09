@@ -146,7 +146,42 @@ const getwifiData =async(x_coo, y_coo)=>{
         'x_coor': x,
         'y_coor': y,
         'rssi': rssi
-      })
+      });
+    }
+    catch(error)
+    {
+      alert(error);
+    }
+  }
+  const writeRSSI_data=async(data, x_coo, y_coo)=>{
+    try
+    {
+      const db =getDatabase(firebaseApp.app);
+      if(data.length==1)
+      {
+        set(ref(db, 'Signal/'+Date.now()),
+        {
+          'bssid': data[0]['BSSID'],
+          'ssid': data[0]['SSID'],
+          'rssi': data[0]['level'],
+          'x_coo': x_coo,
+          'y_coo': y_coo,
+        });
+      }
+      else if(data.length>1)
+      {
+        for(var i in data)
+        {
+          set(ref(db, 'Signal/'+Date.now()+'=>'+i),
+          {
+            'bssid': data[i]['BSSID'],
+            'ssid': data[i]['SSID'],
+            'rssi': data[i]['level'],
+            'x_coo': x_coo,
+            'y_coo': y_coo,
+          });
+        }
+      }
     }
     catch(error)
     {
@@ -157,7 +192,7 @@ const getwifiData =async(x_coo, y_coo)=>{
   
 export default(
     {
-        getwifiData, writeAP_Location,
+        getwifiData, writeAP_Location,writeRSSI_data,
         getPermission, getClosestAP,
         weightedCentroid, test_firebase
     });
