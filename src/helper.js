@@ -95,8 +95,9 @@ const getwifiData =async()=>{
   };
 
   const test_firebase=()=>{
+    const test_data = {'data': 'data'};
     let db_test= firebase.getDatabase();
-    console.log(db_test);
+    var ref_data = firebase.get(db_test, test_data);
   }
 
   
