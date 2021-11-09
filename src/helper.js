@@ -3,8 +3,9 @@ import WifiManager from "react-native-wifi-reborn";
 import wifi from 'react-native-android-wifi';
 import React from 'react';
 import { PermissionsAndroid,Platform, Image, LogBox } from 'react-native';
-//import firebase from 'react-native-firebase';
-import firebase from 'firebase/database'
+import{getDatabase, ref, get, set, onValue} from 'firebase/database';
+import firebaseApp from './firebase_config';
+
 
 const getPermission =async()=>{
     if(Platform.OS=='android')
@@ -33,10 +34,10 @@ const getPermission =async()=>{
     }
   };
 
-const getwifiData =async()=>{
+const getwifiData =async(x_coo, y_coo)=>{
     try
     {
-      console.log(getImageSize());
+      //helper.test_firebase();
       let perm = await getPermission();
       if(perm=='OK')
       {
@@ -52,26 +53,34 @@ const getwifiData =async()=>{
           let IP = await WifiManager.getIP();
           let current_ssid = await WifiManager.getCurrentWifiSSID();
           let current_RSSI = await WifiManager.getCurrentSignalStrength();
-          var wifilist = await WifiManager.loadWifiList();
+          let wifilist = await WifiManager.loadWifiList();
           
           console.log(IP, current_ssid, current_RSSI);
-          console.log(wifilist);
-
-          wifi.getFrequency((frequency) => {
-            console.log('frequency:'+ frequency);
-          });
-
-          wifi.loadWifiList((wifiStringList) => {
-            var wifiArray = JSON.parse(wifiStringList);
-              console.log(wifiArray);
-            },
-            (error) => {
-              console.log(error);
+          if(wifilist.length>0)
+          {
+            console.log(wifilist);
+            var closetAP = getClosestAP(wifilist);
+            if(closetAP.length==1)
+            {
+              writeAP_Location(closetAP[0]['bssid'], x_coo, y_coo, closetAP[0]['rssi']);
             }
-          );
-        }
-        return(wifilist);
+            else if(closetAP.length>1)
+            {
+              for(var index in closetAP)
+              {
+                writeAP_Location(closetAP[index]['bssid'], x_coo, y_coo, closetAP[index]['rssi']);
+              }
+            }
+            alert('AP gan nhat: '+ closetAP[0]['bssid']);
+            console.log('RSSI: '+ wifilist[0].level);
 
+          }
+          else if(wifilist.length==0)
+          {
+            alert('khong quet duoc');
+          }
+        }
+        
       }
       else
       {
@@ -86,6 +95,24 @@ const getwifiData =async()=>{
 
   };
 
+  const getClosestAP = (listAP) =>{
+    var rssi_collect = [];
+    var bssid_closest = [];
+    var threshold_level = -46;
+    for(var item in listAP)
+    {
+      rssi_collect.push(listAP[item]['level']);
+    }
+    for(var i in rssi_collect)
+    {
+      if(Math.max(rssi_collect)==rssi_collect[i] && rssi_collect[i]>threshold_level)
+      {
+        bssid_closest.push({'bssid': listAP[i]['BSSID'], 'rssi': rssi_collect[i]});
+      }
+    }
+    return(bssid_closest);
+  }
+
   const weightedCentroid = () =>{
     var wifiList = [];
     for(let key in data.wifi_data)
@@ -94,16 +121,78 @@ const getwifiData =async()=>{
     }
   };
 
-  const test_firebase=()=>{
-    const test_data = {'data': 'data'};
-    let db_test= firebase.getDatabase();
-    var ref_data = firebase.get(db_test, test_data);
+  const test_firebase=async()=>{
+    try
+    {
+      const db = getDatabase(firebaseApp.app);
+      var data = ref(db, 'test/test1');
+      onValue(data, (snapshot)=>{
+        const dt = snapshot.val();
+        console.log(dt);
+      });
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
+  }
+  const writeAP_Location=async(bssid, x, y, rssi)=>{
+    try
+    {
+      const db = getDatabase(firebaseApp.app);
+      set(ref(db, 'AP_Location/'+Date.now()),
+      {
+        'bssid': bssid,
+        'x_coor': x,
+        'y_coor': y,
+        'rssi': rssi
+      });
+    }
+    catch(error)
+    {
+      alert(error);
+    }
+  }
+  const writeRSSI_data=async(data, x_coo, y_coo)=>{
+    try
+    {
+      const db =getDatabase(firebaseApp.app);
+      if(data.length==1)
+      {
+        set(ref(db, 'Signal/'+Date.now()),
+        {
+          'bssid': data[0]['BSSID'],
+          'ssid': data[0]['SSID'],
+          'rssi': data[0]['level'],
+          'x_coo': x_coo,
+          'y_coo': y_coo,
+        });
+      }
+      else if(data.length>1)
+      {
+        for(var i in data)
+        {
+          set(ref(db, 'Signal/'+Date.now()+'=>'+i),
+          {
+            'bssid': data[i]['BSSID'],
+            'ssid': data[i]['SSID'],
+            'rssi': data[i]['level'],
+            'x_coo': x_coo,
+            'y_coo': y_coo,
+          });
+        }
+      }
+    }
+    catch(error)
+    {
+      alert(error);
+    }
   }
 
   
 export default(
     {
-        getwifiData, 
-        getPermission,
+        getwifiData, writeAP_Location,writeRSSI_data,
+        getPermission, getClosestAP,
         weightedCentroid, test_firebase
     });

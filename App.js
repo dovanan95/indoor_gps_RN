@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, PermissionsAndroid,ImageBackground,
+import { StyleSheet, Text, View, PermissionsAndroid,Picker,
    TouchableOpacity, Platform, Image, LogBox } from 'react-native';
 import WifiManager from "react-native-wifi-reborn";
 import wifi from 'react-native-android-wifi';
@@ -17,6 +17,7 @@ export default function App() {
   const[y_coo, setY]=useState(0);
   const[uri_IMG, setURI_IMG]=useState('');
   const[image, setImage]=useState(imageURI);
+  const[mode, setMode]=useState('RSSI');
 
   useEffect(()=>{
     async function requestPermission()
@@ -30,6 +31,8 @@ export default function App() {
   
   const imageURI ='./src/asset/map7th_floor.png';
   const imageImport = Image.resolveAssetSource(img).uri;
+
+  const Mode =[{'mode':'AP', 'value':'Scan AP Location'},{'mode':'RSSI', 'value':'Scan RSSI'},{'mode':'POS','value':'Positioning'}];
 
   const getImageSize = ()=>{
     let height_r, width_r;
@@ -100,6 +103,7 @@ export default function App() {
         }
         else if(isConnect)
         {
+          console.log(mode);
           let IP = await WifiManager.getIP();
           let current_ssid = await WifiManager.getCurrentWifiSSID();
           let current_RSSI = await WifiManager.getCurrentSignalStrength();
@@ -109,26 +113,37 @@ export default function App() {
           if(wifilist.length>0)
           {
             console.log(wifilist);
-            alert('RSSI: '+ wifilist[0].level);
-  
+            if(mode == 'AP')
+            {
+              var closetAP = helper.getClosestAP(wifilist);
+              if(closetAP.length==1)
+              {
+                helper.writeAP_Location(closetAP[0]['bssid'], x_coo, y_coo, closetAP[0]['rssi']);
+              }
+              else if(closetAP.length>1)
+              {
+                for(var index in closetAP)
+                {
+                  helper.writeAP_Location(closetAP[index]['bssid'], x_coo, y_coo, closetAP[index]['rssi']);
+                }
+              }
+              alert('AP gan nhat: '+ closetAP[0]['bssid']);
+            }
+            else if(mode=='RSSI')
+            {
+              alert('RSSI: '+ wifilist[0].level);
+              helper.writeRSSI_data(wifilist,x_coo, y_coo);
+            }
+            else if(mode=='POS')
+            {
+              console.log('POS');
+              helper.weightedCentroid();
+            }
           }
           else if(wifilist.length==0)
           {
             alert('khong quet duoc');
           }
-      
-          wifi.getFrequency((frequency) => {
-            console.log('frequency:'+ frequency);
-          });
-
-          wifi.loadWifiList((wifiStringList) => {
-            var wifiArray = JSON.parse(wifiStringList);
-              console.log(wifiArray);
-            },
-            (error) => {
-              console.log(error);
-            }
-          );
         }
         
       }
@@ -205,8 +220,16 @@ export default function App() {
         value={y_coo.toString()}></TextInput>
         {/*<Image style={styles.image} source={require(imageURI)} />*/}
         {<ImageCompon/>}
-       
         <Text>X:{x_coo}, Y:{y_coo}</Text>
+        <Picker
+          selectedValue={mode} 
+          style={{ height: 30, width: 200, alignItems:'center', alignContent:'center'}}
+          onValueChange={(itemValue, itemIndex)=>{setMode(itemValue)}}>
+          {Mode.map((item,key)=>{
+            return <Picker.Item label={item.value} value={item.mode} key={key}/>
+          })
+        }
+        </Picker>
   
       </View>
       
