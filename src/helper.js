@@ -34,6 +34,12 @@ const getPermission =async()=>{
     }
   };
 
+          /*var test_data_0 = 
+              [{'BSSID':'sbc', 'level':-30},
+              {'BSSID':'iwmc','level':-40},
+              {'BSSID':'anan', 'level':-45},
+              {'BSSID':'9cf','level':-50}];*/
+              
 const getwifiData =async(x_coo, y_coo)=>{
     try
     {
@@ -105,7 +111,7 @@ const getwifiData =async(x_coo, y_coo)=>{
     }
     for(var i in rssi_collect)
     {
-      if(Math.max(rssi_collect)==rssi_collect[i] && rssi_collect[i]>threshold_level)
+      if(Math.max(...rssi_collect)==rssi_collect[i] && rssi_collect[i]>threshold_level)
       {
         bssid_closest.push({'bssid': listAP[i]['BSSID'], 'rssi': rssi_collect[i]});
       }

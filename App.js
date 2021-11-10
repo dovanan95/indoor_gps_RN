@@ -119,6 +119,7 @@ export default function App() {
               if(closetAP.length==1)
               {
                 helper.writeAP_Location(closetAP[0]['bssid'], x_coo, y_coo, closetAP[0]['rssi']);
+                alert('AP gan nhat: '+ closetAP[0]['bssid']);
               }
               else if(closetAP.length>1)
               {
@@ -126,8 +127,12 @@ export default function App() {
                 {
                   helper.writeAP_Location(closetAP[index]['bssid'], x_coo, y_coo, closetAP[index]['rssi']);
                 }
+                alert('AP gan nhat: '+ closetAP[0]['bssid']);
               }
-              alert('AP gan nhat: '+ closetAP[0]['bssid']);
+              else if(closetAP.length==0)
+              {
+                alert('no data');
+              }
             }
             else if(mode=='RSSI')
             {
@@ -155,7 +160,7 @@ export default function App() {
     }
     catch(error)
     {
-      alert(error);
+      console.log(error);
     }
 
   };
