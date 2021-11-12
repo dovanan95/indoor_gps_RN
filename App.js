@@ -55,7 +55,7 @@ export default function App() {
     var img_y = getImageSize().height_r;
     var real_y = data.map_size.Height;
     var scale = img_y/real_y;
-    var y_onMap = y*scale;
+    var y_onMap =  (real_y - y)*scale;
     return y_onMap;
   }
 
@@ -182,7 +182,7 @@ export default function App() {
   }
 
   const markOnImage = ()=>{
-    helper.weightedCentroid();
+    //helper.weightedCentroid();
     ImageMarker.markText({
       src: imageImport,
       text:'X',
@@ -194,7 +194,7 @@ export default function App() {
       quality:100,
       scale:1,
     }).then((path)=>{
-      //console.log(path);
+      console.log(scaling_input_y(y_coo));
       setURI_IMG(Platform.OS === 'android' ? 'file://' + path : path,);
     }).catch((error)=>{
       console.log(error);
