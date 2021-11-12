@@ -90,7 +90,6 @@ export default function App() {
   const getwifiData =async()=>{
     try
     {
-      //helper.test_firebase();
       let perm = await getPermission();
       if(perm=='OK')
       {
@@ -104,12 +103,11 @@ export default function App() {
         else if(isConnect)
         {
           console.log(mode);
-          let IP = await WifiManager.getIP();
+          /*let IP = await WifiManager.getIP();
           let current_ssid = await WifiManager.getCurrentWifiSSID();
-          let current_RSSI = await WifiManager.getCurrentSignalStrength();
+          let current_RSSI = await WifiManager.getCurrentSignalStrength();*/
           let wifilist = await WifiManager.loadWifiList();
-          
-          console.log(IP, current_ssid, current_RSSI);
+        
           if(wifilist.length>0)
           {
             console.log(wifilist);
@@ -194,7 +192,7 @@ export default function App() {
       quality:100,
       scale:1,
     }).then((path)=>{
-      console.log(scaling_input_y(y_coo));
+      //console.log(scaling_input_y(y_coo));
       setURI_IMG(Platform.OS === 'android' ? 'file://' + path : path,);
     }).catch((error)=>{
       console.log(error);
