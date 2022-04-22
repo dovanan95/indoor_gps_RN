@@ -107,7 +107,7 @@ export default function App() {
     const sensor_data_start = async() =>{
         var x_acc; var y_acc; var z_acc;
         subscription_acc = accelerometer.subscribe(({ x, y, z, timestamp }) =>{
-            console.log('acc: ', x, y, z, timestamp);
+            //console.log('acc: ', x, y, z, timestamp);
             set(ref(db, 'imu/'+timestamp), {
                 'timestamp': timestamp,
                 'x_acc': x,
@@ -115,10 +115,11 @@ export default function App() {
                 'z_acc': z,
             })
         });
+        setUpdateIntervalForType(SensorTypes.accelerometer,100);
      
         var x_gyr; var y_gyr; var z_gyr;
         subscription_gyr = gyroscope.subscribe(({x,y,z, timestamp})=>{
-            console.log('gyr:', x, y, z,timestamp);
+            //console.log('gyr:', x, y, z,timestamp);
             set(ref(db, 'imu/'+timestamp), {
                 'timestamp': timestamp,
                 'x_gyr': x,
@@ -126,10 +127,11 @@ export default function App() {
                 'z_gyr': z,
             })
         });
+        setUpdateIntervalForType(SensorTypes.gyroscope,100);
        
         var x_mag; var y_mag; var z_mag;
         subscription_mag = magnetometer.subscribe(({x,y,z,timestamp})=>{
-            console.log('mag:', x,y,z,timestamp);
+            //console.log('mag:', x,y,z,timestamp);
             set(ref(db, 'imu/'+timestamp), {
                 'timestamp': timestamp,
                 'x_mag': x,
@@ -137,7 +139,7 @@ export default function App() {
                 'z_mag': z,
             })
         });
-     
+        setUpdateIntervalForType(SensorTypes.magnetometer,100);
     }
     const sensor_data_stop = () =>{
         subscription_acc.unsubscribe();
